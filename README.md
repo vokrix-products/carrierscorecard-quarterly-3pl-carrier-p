@@ -63,3 +63,5 @@ Railway: carrierscorecard-quarterly-3pl-carrier-p
 Cloudflare: carrierscorecard-quarterly-3pl-carrier-p.vokrix.co
 
 Billing: price_1UIe2L2c9uGCcgMSteIpJ74J
+
+Landing: https://vokrix.co/carrierscorecard-quarterly-3pl-carrier-p
