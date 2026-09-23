@@ -161,22 +161,28 @@ def _parse_text_fallback(text):
     return records
 
 
+def _is_binary_container(data) -> bool:
+    """True for formats whose raw bytes are not themselves scorecard text.
+
+    Such bytes must never be fed to the ``key: value`` text fallback: PDF and
+    zip (xlsx) syntax is full of ``:`` and ``=``, so the fallback happily
+    fabricates placeholder records from binary noise instead of reporting that
+    nothing was parseable.
+    """
+    return data[:4] == b"%PDF" or data[:2] == b"PK"
+
+
 def _detect_and_parse(file_bytes):
     data = file_bytes if isinstance(file_bytes, (bytes, bytearray)) else str(file_bytes).encode("utf-8")
 
     if data[:4] == b"%PDF":
         text = _extract_pdf_text(data)
-        if text.strip():
-            parsed = _parse_text_fallback(text)
-            if parsed:
-                return parsed
-        return _parse_text_fallback(_decode_bytes(data))
+        if not text.strip():
+            return []
+        return _parse_text_fallback(text)
 
     if data[:2] == b"PK":
-        parsed = _parse_excel(data)
-        if parsed:
-            return parsed
-        return []
+        return _parse_excel(data)
 
     text = _decode_bytes(data)
     parsed = _parse_csv(text)
@@ -243,25 +249,17 @@ def process_file(file_bytes, segment: str = DEFAULT_SEGMENT) -> list:
 
     Accepts PDF, Excel (.xlsx), CSV, or plain-text bytes. Returns a list of
     records each containing top-level title, status, details, and due_date,
-    plus the computed carrier scorecard KPIs.
+    plus the computed carrier scorecard KPIs. Unparseable input returns an
+    empty list rather than placeholder records.
     """
     if file_bytes is None:
         return []
 
-    rows = _detect_and_parse(file_bytes)
-
     records = []
-    for row in rows:
+    for row in _detect_and_parse(file_bytes):
         if not isinstance(row, dict) or not row:
             continue
         records.append(_process_row(row, segment))
-
-    if not records:
-        text = _decode_bytes(file_bytes) if isinstance(file_bytes, (bytes, bytearray)) else str(file_bytes)
-        if text.strip():
-            parsed = _parse_text_fallback(text)
-            for row in parsed:
-                records.append(_process_row(row, segment))
 
     return records
 
