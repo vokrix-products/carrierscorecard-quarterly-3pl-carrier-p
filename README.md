@@ -60,3 +60,4 @@ The normalizer, threshold engine, and KPI engine are shared building blocks reus
 Dashboard: https://carrierscorecard-quarterly-3pl-carrier-p.vokrix.co
 Vercel: carrierscorecard-quarterly-3pl-carrier-p
 Railway: carrierscorecard-quarterly-3pl-carrier-p
+Cloudflare: carrierscorecard-quarterly-3pl-carrier-p.vokrix.co
