@@ -8,9 +8,14 @@ export const taskSchema = z.object({
   status: z.string(),
   label: z.string(),
   priority: z.string(),
-  // Structured extracted fields (e.g. expiration date, policy number,
-  // coverage type). Keys are product-specific — set by the backend poller.
-  details: z.record(z.string(), z.unknown()).nullable().optional(),
+  // Extracted data. The poller writes this as a human-readable summary string
+  // for some products (e.g. CarrierScorecard: "On-Time Delivery: 95% (green)")
+  // and as a structured JSON object for others. Accept both — parsing as an
+  // object only caused every row to throw and blank the page.
+  details: z
+    .union([z.record(z.string(), z.unknown()), z.string()])
+    .nullable()
+    .optional(),
   // Path in the 'uploads' bucket to the original document this record
   // came from, for verifying extraction against the source.
   source_file_path: z.string().nullable().optional(),
