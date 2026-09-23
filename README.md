@@ -56,3 +56,6 @@ The poller feeds a single file to `process_file()`:
 ## Reused Across All Vokrix Products
 
 The normalizer, threshold engine, and KPI engine are shared building blocks reused across every Vokrix report-builder backend.
+
+Dashboard: https://carrierscorecard-quarterly-3pl-carrier-p.vokrix.co
+Vercel: carrierscorecard-quarterly-3pl-carrier-p
